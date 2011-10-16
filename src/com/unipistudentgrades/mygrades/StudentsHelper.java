@@ -24,8 +24,10 @@ import org.apache.http.params.CoreProtocolPNames;
 public class StudentsHelper{
 
     public static final String LOGIN_PAGE = "http://students.unipi.gr/login.asp";
-    public static final String GRADES_PAGE = "http://students.unipi.gr/stud_CResults.asp?studPg=1&mnuid=mnu3";
-    public static final String ENCODING = "ISO-8859-7";
+//      public static final String GRADES_PAGE = "http://students.unipi.gr/stud_CResults.asp?studPg=1&mnuid=mnu3";
+//      public static final String ENCODING = "ISO-8859-7";
+      public static final String GRADES_PAGE = "http://192.168.1.127:8000/koko.html";
+      public static final String ENCODING = "UTF-8";
     public static final String LINE_PATTERN_STRING = "<tr height=\"25\" bgcolor=\"#fafafa\">.*?/tr>";
     public static final Pattern LINE_PATTERN = Pattern.compile(LINE_PATTERN_STRING);
     public static final String COLUMN_PATTERN_STRING = "<td.*?/td>";
@@ -65,6 +67,7 @@ public class StudentsHelper{
         }
         grades = new ArrayList<Grade>();
 
+        if (table !=null){
         Matcher matcher = LINE_PATTERN.matcher(table);
         while (matcher.find()){
             String line = matcher.group();
@@ -90,6 +93,7 @@ public class StudentsHelper{
 
         GradePeriodComparator comparator = new GradePeriodComparator();
         Collections.sort(grades, new GradePeriodComparator());
+        }
         this.size = grades.size();
     }
 

@@ -1,5 +1,9 @@
 package com.unipistudentgrades.mygrades;
 
+import 	android.os.AsyncTask;
+import android.widget.Toast;
+import android.graphics.Color;
+
 import java.util.ArrayList;
 import java.util.List;
 import android.app.ListActivity;
@@ -12,6 +16,7 @@ import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,16 +25,49 @@ import android.widget.TextView;
 
 public class MyGrades extends ListActivity
 {
-    private static final StudentsHelper studentsHelper = new StudentsHelper() ;
+//    private static final StudentsHelper studentsHelper = new StudentsHelper() ;
     private String username;
     private String password;
+
+
+
+    private class UpdateGrades extends AsyncTask<Void, Void, List<Grade>> {
+
+        public ProgressDialog dialog;
+        protected List<Grade> doInBackground(Void... pips) {
+            StudentsHelper studentsHelper = new StudentsHelper();
+            studentsHelper.init(username, password);
+
+            List <Grade> grades = studentsHelper.getGrades();
+            return grades;
+        }
+
+        protected void onPreExecute(){
+
+        dialog = ProgressDialog.show(MyGrades.this, "", 
+            "Fetching new grades. Please wait...", true);
+        }
+        protected void onPostExecute(List<Grade> grades) {
+        dialog.dismiss();
+        if (grades.size() ==0){
+        Toast toast = Toast.makeText(MyGrades.this, "No grades found", 5);
+        toast.show();
+        }
+        else{
+        setListAdapter(new GradeAdapter(MyGrades.this, grades));
+        }
+        }
+    }
+
+
+
 
     @Override
         public void onCreate(Bundle savedInstanceState)
         {
             super.onCreate(savedInstanceState);
             setContentView(R.layout.main);
-//            studentsHelper = new StudentsHelper();
+            //            studentsHelper = new StudentsHelper();
         }
 
     @Override
@@ -46,7 +84,6 @@ public class MyGrades extends ListActivity
                 showPreferences();
             }
             else{
-                studentsHelper.init(username,password);
                 updateGrades();
             }
             super.onResume();
@@ -67,7 +104,7 @@ public class MyGrades extends ListActivity
                     showPreferences();
                     return true;
                 case R.id.update:
-                    studentsHelper.empty();
+//                    studentsHelper.empty();
                     updateGrades();
                     return true;
                 default:
@@ -76,7 +113,12 @@ public class MyGrades extends ListActivity
         }
 
     public boolean updateGrades(){
-        setListAdapter(new GradeAdapter(this, studentsHelper.getGrades()));
+        try{
+        UpdateGrades task = new UpdateGrades();
+        task.execute();
+        }
+        catch(Exception e){
+        }
         return true;
     }
 
@@ -86,11 +128,14 @@ public class MyGrades extends ListActivity
         return true;
 
     }
+
 }
 
 class GradeAdapter extends ArrayAdapter {
     private final Activity activity;
     private final List grades;
+    private final int light = (new Color()).rgb(30,30,30);
+    private final int dark = (new Color()).rgb(00,00,00);
 
     public GradeAdapter(Activity activity, List objects) {
         super(activity, R.layout.grade_list_item , objects);

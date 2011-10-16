@@ -8,8 +8,8 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
         android:paddingRight="4dp"
         android:id="@+id/course_name"
         />
