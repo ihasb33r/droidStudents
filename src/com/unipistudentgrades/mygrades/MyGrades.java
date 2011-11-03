@@ -1,6 +1,7 @@
 package com.unipistudentgrades.mygrades;
 
 import 	android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 import android.graphics.Color;
 
@@ -15,6 +16,7 @@ import android.view.MenuInflater;
 import android.preference.PreferenceManager;
 import android.content.SharedPreferences;
 
+import android.util.Log;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.view.LayoutInflater;
@@ -35,11 +37,17 @@ public class MyGrades extends ListActivity
 
         public ProgressDialog dialog;
         protected List<Grade> doInBackground(Void... pips) {
-            StudentsHelper studentsHelper = new StudentsHelper();
+            StudentsHelper studentsHelper = new StudentsHelper(getApplicationContext());
             studentsHelper.init(username, password);
 
+            try{
             List <Grade> grades = studentsHelper.getGrades();
             return grades;
+            }
+            catch (Exception e){
+                Log.i("MYGRADES", e.getMessage());
+            }
+            return null;
         }
 
         protected void onPreExecute(){
@@ -146,32 +154,68 @@ class GradeAdapter extends ArrayAdapter {
     @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             View rowView = convertView;
-            GradeView gView = null;
-
-            if(rowView == null)
-            {
-                // Get a new instance of the row layout view
-                LayoutInflater inflater = activity.getLayoutInflater();
-                rowView = inflater.inflate(R.layout.grade_list_item, null);
-
-                // Hold the view objects in an object,
-                // so they don't need to be re-fetched
-                gView = new GradeView();
-                gView.course_name = (TextView) rowView.findViewById(R.id.course_name);
-                gView.course_grade = (TextView) rowView.findViewById(R.id.course_grade);
-
-                // Cache the view objects in the tag,
-                // so they can be re-accessed later
-                rowView.setTag(gView);
-            } else {
-                gView = (GradeView) rowView.getTag();
-            }
-
-            // Transfer the stock data from the data object
-            // to the view objects
             Grade grade = (Grade) grades.get(position);
-            gView.course_name.setText(grade.course_name);
-            gView.course_grade.setText(grade.course_grade);
+                Log.i("--------------MYGRADES---------------", Integer.toString(position));
+                Log.i("--------------MYGRADES---------------", grade.course_name);
+            if (grade.course_grade.compareTo("-99")!=0){
+
+                GradeView gView = null;
+
+    //            if(rowView == null)
+     //           {
+                    // Get a new instance of the row layout view
+                    LayoutInflater inflater = activity.getLayoutInflater();
+                    rowView = inflater.inflate(R.layout.grade_list_item, null);
+
+                    // Hold the view objects in an object,
+                    // so they don't need to be re-fetched
+                    gView = new GradeView();
+                    gView.course_name = (TextView) rowView.findViewById(R.id.course_name);
+                    gView.course_grade = (TextView) rowView.findViewById(R.id.course_grade);
+
+                    // Cache the view objects in the tag,
+                    // so they can be re-accessed later
+      //              rowView.setTag(gView);
+       //         } else {
+        //            try{
+         //           gView = (GradeView) rowView.getTag();
+          //          }
+           //         catch(Exception e){
+            //        }
+            //    }
+
+                // Transfer the stock data from the data object
+                // to the view objects
+
+                gView.course_name.setText(grade.course_name);
+                gView.course_grade.setText(grade.course_grade);
+            }
+            else {
+                HeaderView hView = null;
+
+//                if(rowView == null)
+ //               {
+                    // Get a new instance of the row layout view
+                    LayoutInflater inflater = activity.getLayoutInflater();
+                    rowView = inflater.inflate(R.layout.header, null);
+
+                    // Hold the view objects in an object,
+                    // so they don't need to be re-fetched
+                    hView = new HeaderView();
+                    hView.header = (TextView) rowView.findViewById(R.id.headerview);
+
+                    // Cache the view objects in the tag,
+                    // so they can be re-accessed later
+//                    rowView.setTag(hView);
+ //               } else {
+  //                  hView = (HeaderView) rowView.getTag();
+   //             }
+
+                // Transfer the stock data from the data object
+                // to the view objects
+                hView.header.setText(grade.human_period);
+
+            }
 
             return rowView;
         }
@@ -183,5 +227,10 @@ class GradeAdapter extends ArrayAdapter {
     protected static class GradeView {
         protected TextView course_name;
         protected TextView course_grade;
+    }
+
+    protected static class HeaderView {
+        protected TextView spacerview;
+        protected TextView header;
     }
 }

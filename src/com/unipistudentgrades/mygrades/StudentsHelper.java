@@ -1,5 +1,6 @@
 
 package com.unipistudentgrades.mygrades;
+import android.content.Context;
 import java.util.Collections;
 import android.util.Log;
 import java.io.*;
@@ -23,11 +24,11 @@ import org.apache.http.params.CoreProtocolPNames;
 
 public class StudentsHelper{
 
-    public static final String LOGIN_PAGE = "http://students.unipi.gr/login.asp";
-      public static final String GRADES_PAGE = "http://students.unipi.gr/stud_CResults.asp?studPg=1&mnuid=mnu3";
-      public static final String ENCODING = "ISO-8859-7";
-//      public static final String GRADES_PAGE = "http://192.168.1.127:8000/koko.html";
-//      public static final String ENCODING = "UTF-8";
+    public static final String LOGIN_PAGE = "https://students.unipi.gr/login.asp";
+    public static final String GRADES_PAGE = "https://students.unipi.gr/stud_CResults.asp?studPg=1&mnuid=mnu3";
+    public static final String ENCODING = "ISO-8859-7";
+    //      public static final String GRADES_PAGE = "http://192.168.1.127:8000/koko.html";
+    //      public static final String ENCODING = "UTF-8";
     public static final String LINE_PATTERN_STRING = "<tr height=\"25\" bgcolor=\"#fafafa\">.*?/tr>";
     public static final Pattern LINE_PATTERN = Pattern.compile(LINE_PATTERN_STRING);
     public static final String COLUMN_PATTERN_STRING = "<td.*?/td>";
@@ -43,7 +44,11 @@ public class StudentsHelper{
     public String password = null;
     public List<Grade> grades = null;
     public int size=0;
+    public Context context;
 
+    public StudentsHelper(Context context){
+        this.context = context;
+    }
 
     public void init(String username, String password){
         this.username = username;
@@ -61,38 +66,56 @@ public class StudentsHelper{
     public void updateGrades() {
         String table= null;
         try{
-        table = this.getGradesPage();
+            table = this.getGradesPage();
         }
         catch (Exception e){
         }
         grades = new ArrayList<Grade>();
 
         if (table !=null){
-        Matcher matcher = LINE_PATTERN.matcher(table);
-        while (matcher.find()){
-            String line = matcher.group();
-            Matcher columnMatcher = COLUMN_PATTERN.matcher(line);
-            String[] columns = {"","","","","","","","","","",""};
-            int counter =0;
-            while (columnMatcher.find()){
-                Matcher clean = HTML_TAG.matcher(columnMatcher.group());
-                String item = clean.replaceAll("");
-                columns[counter]=item;
-                counter= counter +1;
+            Matcher matcher = LINE_PATTERN.matcher(table);
+            while (matcher.find()){
+                String line = matcher.group();
+                Matcher columnMatcher = COLUMN_PATTERN.matcher(line);
+                String[] columns = {"","","","","","","","","","",""};
+                int counter =0;
+                while (columnMatcher.find()){
+                    Matcher clean = HTML_TAG.matcher(columnMatcher.group());
+                    String item = clean.replaceAll("");
+                    columns[counter]=item;
+                    counter= counter +1;
+                }
+                Grade grade = new Grade();
+                grade.course_grade = columns[GRADE_POSITION];
+                grade.course_name = columns[NAME_POSITION].substring(columns[NAME_POSITION].indexOf(')')+3);
+                String[] lastfield = columns[PERIOD_POSITION].trim().split(" ");
+                String period = lastfield[0];
+                String year = lastfield[lastfield.length-1].replaceAll("\n", "").trim();
+                grade.setPeriod(period.trim(),year.trim()); 
+                grades.add(grade);
+
             }
-            Grade grade = new Grade();
-            grade.course_grade = columns[GRADE_POSITION];
-            grade.course_name = columns[NAME_POSITION].substring(columns[NAME_POSITION].indexOf(')')+3);
-            String[] lastfield = columns[PERIOD_POSITION].trim().split(" ");
-            String period = lastfield[0];
-            String year = lastfield[lastfield.length-1].replaceAll("\n", "").trim();
-            grade.setPeriod(period.trim(),year.trim()); 
-            grades.add(grade);
 
-        }
+            GradePeriodComparator comparator = new GradePeriodComparator();
+            Collections.sort(grades, new GradePeriodComparator());
+            if (grades.size() >0){
+                int counter = 1;
+                grades.add(0, new Grade(grades.get(0).human_period));
+                String current_period = grades.get(1).period;
+                Log.i(TAG, current_period);
+                Grade nextGrade;
+                while (counter < grades.size()){
+                    nextGrade = grades.get(counter);
+                    if (nextGrade.period.compareTo(current_period)!=0){
+                        current_period = nextGrade.period;
+                        grades.add(counter,new  Grade(nextGrade.human_period));
+                        counter = counter +1;
+                    }
+                    counter = counter +1;
+                }
+            }
 
-        GradePeriodComparator comparator = new GradePeriodComparator();
-        Collections.sort(grades, new GradePeriodComparator());
+
         }
         this.size = grades.size();
     }
@@ -109,7 +132,8 @@ public class StudentsHelper{
     public String getGradesPage() throws Exception{
         String page = null;
         try {
-            HttpClient client = new DefaultHttpClient();
+            //            HttpClient client = new DefaultHttpClient();
+            HttpClient client = new MyHttpClient(this.context);
 
             HttpPost request = new HttpPost(LOGIN_PAGE);
             List <NameValuePair> nvps = new ArrayList <NameValuePair>();
@@ -119,7 +143,9 @@ public class StudentsHelper{
             nvps.add(new BasicNameValuePair("submit1", "Είσοδος"));
             request.setEntity(new UrlEncodedFormEntity(nvps, HTTP.UTF_8));
             HttpResponse response = client.execute(request);
+            response.getEntity().consumeContent();
             response = client.execute(request);
+            response.getEntity().consumeContent();
             HttpGet getrequest = new HttpGet(GRADES_PAGE);
             response = client.execute(getrequest);
             BufferedReader r = new BufferedReader(new InputStreamReader(response.getEntity().getContent(), ENCODING));
