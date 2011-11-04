@@ -1,0 +1,20 @@
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes.dex : \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/MyGrades.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/MyGrades$UpdateGrades.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/GradeAdapter.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/Grade.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/R$id.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/R$raw.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/R$layout.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/GradeAdapter$HeaderView.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/R$attr.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/StudentsHelper.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/GradePeriodComparator.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/MyGrades$1.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/R$string.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/MyHttpClient.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/R$menu.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/R$drawable.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/Preferences.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/GradeAdapter$GradeView.class \
+/home/mallias/Development/Android/UnipiStudentGrades-all/fixhttps3/bin/classes/com/unipistudentgrades/mygrades/R.class \
